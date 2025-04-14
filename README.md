@@ -1,4 +1,4 @@
-##Catci's web Engine
+# Catci's web Engine
 
 *Catci'web Engine* is a lightweight web engine that allows you to embed CSS, JavaScript, animations, and JSON-driven content directly into your HTML using custom data attributes. This engine aims to simplify styling and interactive behavior with shorthand syntax and built-in helpers.
 
