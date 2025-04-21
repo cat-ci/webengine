@@ -1,320 +1,273 @@
-# Catci's web Engine
+# Catci's Web Engine
 
-V 2 avaliable (Stroke, Json arent intergrated yet)
-
-*Catci'web Engine* is a lightweight web engine that allows you to embed CSS, JavaScript, animations, and JSON-driven content directly into your HTML using custom data attributes. This engine aims to simplify styling and interactive behavior with shorthand syntax and built-in helpers.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Data Attributes](#data-attributes)
-3. [CSS Shortcuts](#css-shortcuts)
-   - [Display](#display)
-   - [Margin](#margin)
-   - [Padding](#padding)
-   - [Position](#position)
-   - [Border](#border)
-   - [Background](#background)
-   - [Font](#font)
-   - [Size](#size)
-   - [Color](#color)
-4. [JSON Integration](#json-integration)
-5. [Normal Map Image Support](#normal-map-image-support)
-6. [Pre-defined Animations](#pre-defined-animations)
-7. [Stroke Effects](#stroke-effects)
-8. [Example Document](#example-document)
-9. [Additional Notes](#additional-notes)
+## Introduction
+Catci's Web Engine is a lightweight set of tools that allow you to create a website with ease.
 
 ---
 
-## Overview
-
-Catci'web Engine allows you to embed CSS and JavaScript directly into your HTML using custom data attributes. It provides simplified syntax (acronyms) that maps quickly to standard CSS properties and JavaScript behaviors. Among its features are:
-
-- **Easy CSS shorthand** for common properties such as display, margin, padding, and more.
-- **Extra functionalities** like JSON data pushing, normal map rendering, and stroke effects.
-- **Built-in pre-defined animations** (spin, fade, slide, zoom, etc.) with customizable durations.
-
----
-
-## Data Attributes
-
-Use these attributes to control where your inline CSS/JS/animations go:
-
-- **Primary Attributes:**  
-  `data-catci`, `data-cen`, `data-cx`, `data-ce`
-- **Scripts and Styles:**  
-  `data-catci-scripts` (scripts),  
-  `data-catci-styles` (styles),  
-  `data-catci-animations` (animations),  
-  `data-catci-styles-global` (global styles)
-- **Low-end Devices:**  
-  `data-catci-lowend`
+## Features
+- Multi markup language support straight into your HTML (RSS, Markdown, CSV etc.)
+- Extended tailwind like CSS
+- Inline JSON extraction from path
+- Font Awsome icons support
+- Element cloning, positioning (within DOM), and more
+- Boolean styling support
+- Normal mapped images support (Via THREE.js)
+- Automatic semantic reformatting
+- Better tooltips
+- Better audio player
+- Lowend attributes definition (Automatically detects if a users computer is lowend or struggling)
+- Theme attributes definition (Automatic to users browser preference light/dark mode)
+- Prebuilt animations
+- Prebuilt Common Javascript functions
+- Automatic sitemap.xml generation (if not present -- based on your HTML anchors)
+- Automatic interpretation for other browsers (e.g. Safari, Firefox, Chrome, Edge, Opera) changing styling to work on all browsers
 
 ---
 
-## CSS Shortcuts
+## Usage
 
-The engine uses shorthand syntax to define properties. Each shortcut corresponds to one or more CSS rules.
+### Multi markup language support, use the EXT(External) tag:
+```
+<ext lang="markdown" src="/README.md">
+```
+### Json extraction:
+```
+<div cx="json:first('name') from(https://example.com/example.json) push(self, content) fallback('No name found');"></div> <- Will extract the first name from the json and push it to the content of the div
 
-### Display
+<ul cx="json:all('name') from(https://example.com/example.json) push(child, content) fallback('No names available');"></ul> <- Will extract all names from the json and push them as children to the ul
 
-| Shortcut                               | Resulting CSS                                   |
-|----------------------------------------|-------------------------------------------------|
-| `flex-row` or `fr`                     | `display: flex; flex-direction: row;`           |
-| `flex-col` or `fc`                     | `display: flex; flex-direction: column;`        |
-| `inline-flex-row` or `ifr`             | `display: inline-flex; flex-direction: row;`    |
-| `inline-flex-col` or `ifc`             | `display: inline-flex; flex-direction: column;` |
-| `block` or `db`                        | `display: block;`                               |
-| `inline-block` or `idb`                | `display: inline-block;`                        |
-| `none` or `dn`                         | `display: none;`                                |
-| `inline` or `di`                       | `display: inline;`                              |
-| `grid` or `dg`                         | `display: grid;`                                |
-| `inline-grid` or `dig`                 | `display: inline-grid;`                         |
-| `contents` or `dc`                     | `display: contents;`                            |
-| `table` or `dt`                        | `display: table;`                               |
-| `table-row` or `dtr`                   | `display: table-row;`                           |
-| `table-cell` or `dtc`                  | `display: table-cell;`                          |
-| *(Additional table-related shortcuts)* | *(e.g., `dtcap`, `dtcol`, etc.)*                |
+<div cx="json:filter({role: 'admin'}) from(https://example.com/users.json) push(.admin-list, content) fallback('No admins found');"></div> <- Will extract all users with the role of admin and push them to the content of .admin-list
 
-### Margin
+<img cx="json:map('image_url') from(https://example.com/products.json) push(self, src) fallback('default.jpg');" /> <- Will extract the image_url from the json and push it to the src of the img
 
-| Shortcut                | Usage         | Resulting CSS             |
-|-------------------------|---------------|---------------------------|
-| `margin` or `m`         | `m:{value};`  | `margin: {value};`        |
-| `auto-margin` or `am`   |               | `margin: auto;`           |
-| `no-margin` or `nm`     |               | `margin: 0;`              |
-| `margin-top` or `mt`    | `mt:{value};` | `margin-top: {value};`    |
-| `margin-right` or `mr`  | `mr:{value};` | `margin-right: {value};`  |
-| `margin-bottom` or `mb` | `mb:{value};` | `margin-bottom: {value};` |
-| `margin-left` or `ml`   | `ml:{value};` | `margin-left: {value};`   |
+<div cx="json:first('title') from(https://example.com/blog.json) push(self, content) error('Failed to load blog title');"></div> <- Handle errors
 
-### Padding
-
-| Shortcut                 | Usage         | Resulting CSS              |
-|--------------------------|---------------|----------------------------|
-| `padding` or `p`         | `p:{value};`  | `padding: {value};`        |
-| `auto-padding` or `ap`   |               | `padding: auto;`           |
-| `no-padding` or `np`     |               | `padding: 0;`              |
-| `padding-top` or `pt`    | `pt:{value};` | `padding-top: {value};`    |
-| `padding-right` or `pr`  | `pr:{value};` | `padding-right: {value};`  |
-| `padding-bottom` or `pb` | `pb:{value};` | `padding-bottom: {value};` |
-| `padding-left` or `pl`   | `pl:{value};` | `padding-left: {value};`   |
-
-### Position
-
-| Shortcut            | Resulting CSS         |
-|---------------------|-----------------------|
-| `relative` or `rel` | `position: relative;` |
-| `absolute` or `abs` | `position: absolute;` |
-| `fixed` or `fix`    | `position: fixed;`    |
-| `sticky` or `stk`   | `position: sticky;`   |
-| `static` or `sta`   | `position: static;`   |
-
-### Border
-
-| Shortcut                | Usage         | Resulting CSS             |
-|-------------------------|---------------|---------------------------|
-| `border` or `b`         | `b:{value};`  | `border: {value};`        |
-| `border-top` or `bt`    | `bt:{value};` | `border-top: {value};`    |
-| `border-right` or `br`  | `br:{value};` | `border-right: {value};`  |
-| `border-bottom` or `bb` | `bb:{value};` | `border-bottom: {value};` |
-| `border-left` or `bl`   | `bl:{value};` | `border-left: {value};`   |
-| `border-radius`         | `br:{value};` | `border-radius: {value};` |
-| `border-color`          | `bc:{value};` | `border-color: {value};`  |
-| `border-style`          | `bs:{value};` | `border-style: {value};`  |
-| `border-width`          | `bw:{value};` | `border-width: {value};`  |
-
-### Background
-
-| Shortcut                         | Usage          | Resulting CSS                     |
-|----------------------------------|----------------|-----------------------------------|
-| `background` or `bg`             | `bg:{value};`  | `background: {value};`            |
-| `background-color` or `bgc`      | `bgc:{value};` | `background-color: {value};`      |
-| `background-image` or `bgi`      | `bgi:{value};` | `background-image: {value};`      |
-| `background-repeat` or `bgr`     | `bgr:{value};` | `background-repeat: {value};`     |
-| `background-position` or `bgp`   | `bgp:{value};` | `background-position: {value};`   |
-| `background-size` or `bgs`       | `bgs:{value};` | `background-size: {value};`       |
-| `background-attachment` or `bga` | `bga:{value};` | `background-attachment: {value};` |
-
-### Font
-
-| Shortcut               | Usage         | Resulting CSS                    |
-|------------------------|---------------|----------------------------------|
-| `font` or `f`          | `f:{value};`  | `font: {value};`                 |
-| `font-family` or `ff`  | `ff:{value};` | `font-family: {value};`          |
-| `font-size` or `fs`    | `fs:{value};` | `font-size: {value};`            |
-| `font-weight` or `fw`  | `fw:{value};` | `font-weight: {value};`          |
-| `font-style` or `fs`   | `fs:{value};` | `font-style: {value};`           |
-| `font-variant` or `fv` | `fv:{value};` | `font-variant: {value};`         |
-| `font-stretch`         | `fs:{value};` | `font-stretch: {value};`         |
-| `bold` or `b`          |               | `font-weight: bold;`             |
-| `italic` or `i`        |               | `font-style: italic;`            |
-| `underline` or `u`     |               | `text-decoration: underline;`    |
-| `line-through` or `lt` |               | `text-decoration: line-through;` |
-
-### Size
-
-| Shortcut                | Usage         | Resulting CSS          |
-|-------------------------|---------------|------------------------|
-| `width` or `w`          | `w:{value};`  | `width: {value};`      |
-| `height` or `h`         | `h:{value};`  | `height: {value};`     |
-| `max-width` or `mw`     | `mw:{value};` | `max-width: {value};`  |
-| `max-height` or `mh`    | `mh:{value};` | `max-height: {value};` |
-| `min-width` or `mw`     | `mw:{value};` | `min-width: {value};`  |
-| `min-height` or `mh`    | `mh:{value};` | `min-height: {value};` |
-| `screen-width` or `sw`  |               | `width: 100vw;`        |
-| `screen-height` or `sh` |               | `height: 100vh;`       |
-| `full-width` or `fw`    |               | `width: 100%;`         |
-| `full-height` or `fh`   |               | `height: 100%;`        |
-| `auto-width` or `aw`    |               | `width: auto;`         |
-| `auto-height` or `ah`   |               | `height: auto;`        |
-
-### Color
-
-| Shortcut                    | Usage          | Resulting CSS                |
-|-----------------------------|----------------|------------------------------|
-| `color` or `c`              | `c:{value};`   | `color: {value};`            |
-| `background-color` or `bgc` | `bgc:{value};` | `background-color: {value};` |
-
----
-
-## JSON Integration
-
-Catci'web Engine allows you to push JSON data directly into HTML elements. This is especially useful for dynamic content updates.
-
-- **Syntax example:**  
-  ```html
-  <div data-cx="json:first('name')
-      from(https://example.com/example.json)
-      push(self, content);">
-  </div>
-  ```
-  
-- **Keywords explained:**
-  - `json:{path}` – specifies the JSON path.
-  - `from()` – defines the source URL for JSON.
-  - `first({value})` / `last({value})` – returns the first or last instance of a key/value.
-  - `push(.element)` – pushes the JSON data to the specified element which can be:
-    - `self` – the current element.
-    - `.class` – target element by class.
-    - `#id` – target element by ID.
-    - `child` – target a child element.
-    - `src`, `href`, `content` – attributes to push data into.
-
----
-
-## Normal Map Image Support
-
-You can add normal and color maps, as well as light properties for advanced image effects:
-
-- **Syntax example:**
-  ```html
-  <div data-cx="normal-map:/path-to-normal-map;
-      color-map:/path-to-color-map;
-      light-color:#ffffff;
-      light-intensity:0.5;
-      light-direction:0,0,1;">
-  </div>
-  ```
-  
-- **Attributes:**
-  - `normal-map:{path}`
-  - `color-map:{path}`
-  - `light-color:{value}`
-  - `light-intensity:{value}`
-  - `light-direction:{value}`
-
----
-
-## Pre-defined Animations
-
-Animate your elements with a set of pre-built animations. Simply include the duration (or intensity for random effects):
-
-- **Spin Animations:**
-  - `spin:{duration}`  
-  - `spin-reverse:{duration}`
-  
-- **Fade Animations:**
-  - `fade-in:{duration}`  
-  - `fade-out:{duration}`
-  
-- **Flicker Effects:**
-  - `flicker:{duration}`  
-  - `flicker-random:{intensity}` *(Uses JavaScript for random flicker effect)*
-  
-- **Slide Animations:**
-  - `slide-in-left:{duration}`
-  - `slide-in-right:{duration}`
-  - `slide-in-top:{duration}`
-  - `slide-in-bottom:{duration}`
-  - `slide-out-left:{duration}`
-  - `slide-out-right:{duration}`
-  - `slide-out-top:{duration}`
-  - `slide-out-bottom:{duration}`
-  
-- **Zoom Animations:**
-  - `zoom-in:{duration}`
-  - `zoom-out:{duration}`
-
----
-
-## Stroke Effects
-
-Add multi-layered stroke effects to text or other elements. Each stroke can have its own layer, color, width, and opacity.
-
-- **Syntax example:**
-  ```html
-  <h2 data-cx="stroke: layer(1) color(#fff) width(4px) opacity(1);
-      stroke: layer(2) color(#000) width(6px) opacity(0.5);">
-    Hello world!
-  </h2>
-  ```
-  
-  In this example:
-  - The text has two stroke layers:
-    - The first stroke (layer 1) is white, 4px wide.
-    - The second stroke (layer 2) is black, 6px wide with 50% opacity.
-
----
-
-## Example Document
-
-Here's a complete HTML example to get you started using Catci'web Engine:
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Catci'web Engine Example</title>
-    <script src="https://catci.net/engine.js"></script>
-  </head>
-  <body>
-    <!-- Animated Div -->
-    <div data-cx="spin:1s; fade-in:1s; slide-in-left:1s; zoom-in:1s;">
-      <p>Hello world!</p>
-    </div>
-
-    <!-- JSON Data Integration -->
-    <div data-cx="json:first('name') from(https://example.com/example.json) push(self, content);">
-      <!-- Dynamic content will be inserted here -->
-    </div>
-
-    <!-- Normal Map Image Example -->
-    <div data-cx="normal-map:/images/normal-map.png; color-map:/images/color-map.png;
-      light-color:#ffffff; light-intensity:0.5; light-direction:0,0,1;">
-    </div>
-
-    <!-- Stroke Effect Example -->
-    <h2 data-cx="stroke: layer(1) color(#fff) width(4px) opacity(1);
-      stroke: layer(2) color(#000) width(6px) opacity(0.5);">
-      Styled Text
-    </h2>
-  </body>
-</html>
+<div cx="json:$.store.book[0].title from(https://example.com/example.json) push(self, content) fallback('No title available');"></div> <- Use an actual JSON path
 ```
 
+### Font Awsome icons support:
+```
+<icon name="cat" weight="regular"></icon> <- if not specified, defaults to solid
+```
+
+### Element cloning, positioning (within DOM), and more:
+```
+<div cx="clone:all(.element);"></div> <- Will clone the first element with the class of element cloning the content, styling, and CWE attributes to itself
+
+<div cx="clone:style(#element);"></div> <- Will clone the element with the id element cloning the styling to itself 
+
+<div cx="clone:content([type="search"] ~ 3);"> <- Will clone the third element with the type of search cloning the content to itself
+```
+
+### Normal mapped images support:
+```
+<normal height-src="/normal.png" color-src="/texture.png"></normal>
+```
+
+### Lowend attributes definition:
+```
+<div cx="animation:spin; copy-on-click(self) lowend{animation:none; block(javascript)};"></div> 
+```
+
+### Theme attributes definition:
+```
+<div cx="theme:light{background-color: #fff; color: #000;} dark{background-color: #000; color: #fff;};"></div>
+```
 ---
+
+
+#### 1. Layout: Padding & Margin
+| Shortcut                         | Usage           | Result                      |
+|----------------------------------|-----------------|-----------------------------|
+| np, padding-0                    | —               | padding: 0;                 |
+| ap, padding-auto                 | —               | padding: auto;              |
+| p-{size}, padding-{size}         | size (e.g. 8px) | padding: {size};            |
+| pt, padding-top-0                | —               | padding-top: 0;             |
+| pt-{size}, padding-top-{size}    | size            | padding-top: {size};        |
+| pr, padding-right-0              | —               | padding-right: 0;           |
+| pr-{size}, padding-right-{size}  | size            | padding-right: {size};      |
+| pb, padding-bottom-0             | —               | padding-bottom: 0;          |
+| pb-{size}, padding-bottom-{size} | size            | padding-bottom: {size};     |
+| pl, padding-left-0               | —               | padding-left: 0;            |
+| pl-{size}, padding-left-{size}   | size            | padding-left: {size};       |
+| px-{size}, padding-x-{size}      | size            | padding-left/right: {size}; |
+| py-{size}, padding-y-{size}      | size            | padding-top/bottom: {size}; |
+| nm, margin-0                     | —               | margin: 0;                  |
+| am, margin-auto                  | —               | margin: auto;               |
+| m-{size}, margin-{size}          | size            | margin: {size};             |
+| mt, margin-top-0                 | —               | margin-top: 0;              |
+| mt-{size}, margin-top-{size}     | size            | margin-top: {size};         |
+| mr, margin-right-0               | —               | margin-right: 0;            |
+| mr-{size}, margin-right-{size}   | size            | margin-right: {size};       |
+| mb, margin-bottom-0              | —               | margin-bottom: 0;           |
+| mb-{size}, margin-bottom-{size}  | size            | margin-bottom: {size};      |
+| ml, margin-left-0                | —               | margin-left: 0;             |
+| ml-{size}, margin-left-{size}    | size            | margin-left: {size};        |
+| mx-{size}, margin-x-{size}       | size            | margin-left/right: {size};  |
+| my-{size}, margin-y-{size}       | size            | margin-top/bottom: {size};  |
+| w-{size}, width-{size}           | size            | width: {size};              |
+| h-{size}, height-{size}          | size            | height: {size};             |
+| min-w-{size}, min-width-{size}   | size            | min-width: {size};          |
+| max-w-{size}, max-width-{size}   | size            | max-width: {size};          |
+| min-h-{size}, min-height-{size}  | size            | min-height: {size};         |
+| max-h-{size}, max-height-{size}  | size            | max-height: {size};         |
+| z-{index}, z-index-{index}       | integer         | z-index: {index};           |
+
+#### 2. Display & Box Model
+| Shortcut                      | Usage | Result                   |
+|-------------------------------|-------|--------------------------|
+| dn, display-none              | —     | display: none;           |
+| db, display-block             | —     | display: block;          |
+| di, display-inline            | —     | display: inline;         |
+| dib, display-inline-block     | —     | display: inline-block;   |
+| dg, display-grid              | —     | display: grid;           |
+| dig, display-inline-grid      | —     | display: inline-grid;    |
+| dt, display-table             | —     | display: table;          |
+| dtr, display-table-row        | —     | display: table-row;      |
+| dtc, display-table-cell       | —     | display: table-cell;     |
+| bs-bb, box-sizing-border-box  | —     | box-sizing: border-box;  |
+| bs-cb, box-sizing-content-box | —     | box-sizing: content-box; |
+
+#### 3. Flexbox & Alignment
+| Shortcut                          | Usage | Result                                         |
+|-----------------------------------|-------|------------------------------------------------|
+| r, flex-row                       | —     | display:flex;<br>flex-direction:row;           |
+| c, flex-column                    | —     | display:flex;<br>flex-direction:column;        |
+| ir, inline-flex-row               | —     | display:inline-flex;<br>flex-direction:row;    |
+| ic, inline-flex-column            | —     | display:inline-flex;<br>flex-direction:column; |
+| js, justify-start                 | —     | justify-content:flex-start;                    |
+| je, justify-end                   | —     | justify-content:flex-end;                      |
+| jc, justify-center                | —     | justify-content:center;                        |
+| jsb, justify-space-between        | —     | justify-content:space-between;                 |
+| jsa, justify-space-around         | —     | justify-content:space-around;                  |
+| jse, justify-space-evenly         | —     | justify-content:space-evenly;                  |
+| ais, align-items-stretch          | —     | align-items:stretch;                           |
+| aie, align-items-end              | —     | align-items:flex-end;                          |
+| aic, align-items-center           | —     | align-items:center;                            |
+| aib, align-items-baseline         | —     | align-items:baseline;                          |
+| acfs, align-content-start         | —     | align-content:flex-start;                      |
+| ace, align-content-end            | —     | align-content:flex-end;                        |
+| acc, align-content-center         | —     | align-content:center;                          |
+| acsb, align-content-space-between | —     | align-content:space-between;                   |
+| acsa, align-content-space-around  | —     | align-content:space-around;                    |
+| acse, align-content-space-evenly  | —     | align-content:space-evenly;                    |
+| asfs, align-self-start            | —     | align-self:flex-start;                         |
+| asfe, align-self-end              | —     | align-self:flex-end;                           |
+| asc, align-self-center            | —     | align-self:center;                             |
+| asb, align-self-baseline          | —     | align-self:baseline;                           |
+| ass, align-self-stretch           | —     | align-self:stretch;                            |
+| fnw, flex-nowrap                  | —     | flex-wrap:nowrap;                              |
+| fw, flex-wrap                     | —     | flex-wrap:wrap;                                |
+| fwr, flex-wrap-reverse            | —     | flex-wrap:wrap-reverse;                        |
+
+#### 4. Position & Float
+| Shortcut               | Usage | Result             |
+|------------------------|-------|--------------------|
+| rel, position-relative | —     | position:relative; |
+| abs, position-absolute | —     | position:absolute; |
+| fix, position-fixed    | —     | position:fixed;    |
+| stk, position-sticky   | —     | position:sticky;   |
+| fl, float-left         | —     | float:left;        |
+| fr, float-right        | —     | float:right;       |
+| fn, float-none         | —     | float:none;        |
+| cl, clear-left         | —     | clear:left;        |
+| cr, clear-right        | —     | clear:right;       |
+| cb, clear-both         | —     | clear:both;        |
+
+#### 5. Overflow & Resize
+| Shortcut                     | Usage | Result            |
+|------------------------------|-------|-------------------|
+| oh, overflow-hidden          | —     | overflow:hidden;  |
+| oa, overflow-auto            | —     | overflow:auto;    |
+| os, overflow-scroll          | —     | overflow:scroll;  |
+| ov, overflow-visible         | —     | overflow:visible; |
+| ocl, overflow-clip           | —     | overflow:clip;    |
+| ov-{value}, overflow-{value} | value | overflow:{value}; |
+| resize, resize-both          | —     | resize:both;      |
+| resize-n, resize-none        | —     | resize:none;      |
+
+#### 6. Visibility & Contenteditable
+| Shortcut                        | Usage      | Result                   |
+|---------------------------------|------------|--------------------------|
+| vs, visibility-visible          | —          | visibility:visible;      |
+| vh, visibility-hidden           | —          | visibility:hidden;       |
+| vc, visibility-collapse         | —          | visibility:collapse;     |
+| ce, contenteditable-true        | —          | contenteditable:true;    |
+| ce-n, contenteditable-false     | —          | contenteditable:false;   |
+| ce-{value}, contenteditable-{v} | true/false | contenteditable:{value}; |
+
+#### 7. Text & Typography
+| Shortcut                            | Usage         | Result                                                             |
+|-------------------------------------|---------------|--------------------------------------------------------------------|
+| tw, text-wrap                       | —             | overflow-wrap:break-word;<br>word-break:break-word;                |
+| to-e, text-overflow-ellipsis        | —             | text-overflow:ellipsis;<br>overflow:hidden;<br>white-space:nowrap; |
+| tu, text-transform-uppercase        | —             | text-transform:uppercase;                                          |
+| tl, text-transform-lowercase        | —             | text-transform:lowercase;                                          |
+| tc, text-transform-capitalize       | —             | text-transform:capitalize;                                         |
+| ta-left, text-align-left            | —             | text-align:left;                                                   |
+| ta-center, text-align-center        | —             | text-align:center;                                                 |
+| ta-right, text-align-right          | —             | text-align:right;                                                  |
+| ta-justify, text-align-justify      | —             | text-align:justify;                                                |
+| td-u, text-decoration-underline     | —             | text-decoration:underline;                                         |
+| td-lt, text-decoration-line-through | —             | text-decoration:line-through;                                      |
+| td-n, text-decoration-none          | —             | text-decoration:none;                                              |
+| ws-nw, white-space-nowrap           | —             | white-space:nowrap;                                                |
+| ws-n, white-space-normal            | —             | white-space:normal;                                                |
+| ws-pre, white-space-pre             | —             | white-space:pre;                                                   |
+| ws-pw, white-space-pre-wrap         | —             | white-space:pre-wrap;                                              |
+| ws-pl, white-space-pre-line         | —             | white-space:pre-line;                                              |
+| c-{color}, color-{color}            | color         | color:{color};                                                     |
+| fs-{size}, font-size-{size}         | size          | font-size:{size};                                                  |
+| ff-{family}, font-family-{family}   | family        | font-family:{family};                                              |
+| lh-{value}, line-height-{value}     | number/length | line-height:{value};                                               |
+| ti-{size}, text-indent-{size}       | size          | text-indent:{size};                                                |
+| b, font-weight-bold                 | —             | font-weight:bold;                                                  |
+| i, font-style-italic                | —             | font-style:italic;                                                 |
+
+#### 8. Backgrounds
+| Shortcut                           | Usage            | Result                       |
+|------------------------------------|------------------|------------------------------|
+| bg-none, background-none           | —                | background:none;             |
+| bg-init, background-initial        | —                | background:initial;          |
+| bg-{v}, background-{v}             | any bg shorthand | background:{v};              |
+| bgc-{color}, background-color-{c}  | color            | background-color:{color};    |
+| bgi-{url}, background-image-{u}    | URL (no quotes)  | background-image:url({url}); |
+| bgp-{pos}, background-position-{p} | position         | background-position:{pos};   |
+| bgs-{size}, background-size-{s}    | size             | background-size:{size};      |
+| bgr-{r}, background-repeat-{r}     | repeat value     | background-repeat:{r};       |
+
+#### 9. Border & Outline
+| Shortcut                       | Usage       | Result                  |
+|--------------------------------|-------------|-------------------------|
+| b-none, border-none            | —           | border:none;            |
+| b-init, border-initial         | —           | border:initial;         |
+| br-{radius}, border-radius-{r} | radius      | border-radius:{radius}; |
+| bw-{w}, border-width-{w}       | width       | border-width:{w};       |
+| bc-{color}, border-color-{c}   | color       | border-color:{color};   |
+| bs-{style}, border-style-{s}   | style       | border-style:{style};   |
+| o-none, outline-none           | —           | outline:none;           |
+| o-init, outline-initial        | —           | outline:initial;        |
+| o-{value}, outline-{value}     | any outline | outline:{value};        |
+
+#### 10. Miscellaneous
+| Shortcut                   | Usage      | Result               |
+|----------------------------|------------|----------------------|
+| cur-p, cursor-pointer      | —          | cursor:pointer;      |
+| cur-d, cursor-default      | —          | cursor:default;      |
+| cur-na, cursor-not-allowed | —          | cursor:not-allowed;  |
+| cur-{v}, cursor-{v}        | any cursor | cursor:{v};          |
+| op-0, opacity-0            | —          | opacity:0;           |
+| op-1, opacity-1            | —          | opacity:1;           |
+| op-{v}, opacity-{v}        | 0–1 or %   | opacity:{v};         |
+| ls-n, list-style-none      | —          | list-style:none;     |
+| ls-i, list-style-initial   | —          | list-style:initial;  |
+| ls-{v}, list-style-{v}     | any value  | list-style:{v};      |
+| us-n, user-select-none     | —          | user-select:none;    |
+| us-a, user-select-auto     | —          | user-select:auto;    |
+| us-t, user-select-text     | —          | user-select:text;    |
+| us-all, user-select-all    | —          | user-select:all;     |
+| us-{v}, user-select-{v}    | any value  | user-select:{v};     |
+| pe-n, pointer-events-none  | —          | pointer-events:none; |
+| pe-a, pointer-events-auto  | —          | pointer-events:auto; |
+| pe-{v}, pointer-events-{v} | any value  | pointer-events:{v};  |
