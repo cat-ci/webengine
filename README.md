@@ -25,11 +25,45 @@ Catci's Web Engine is a lightweight set of tools that allow you to create a webs
 
 ---
 
+
+
+## Customizability
+
+Catci's Web Engine is designed to be highly customizable. You can easily add your own styles, animations, and functions to the engine.
+
+Multi Mark Up languages come with 0 predefined styles allowing you to easily customise your site with semantic tags 
+```
+.Blog-rss h3{
+    color:white;
+}
+```
+
+---
+
 ## Usage
 
+### Containers:
+
+#### Hover Container
+to hover in CWE, use the hover attribute-container:
+```
+<div cx="hover{bg-blue-500 hover:text-white}>Hover me</div>
+```
+#### Organisation Containers
+Define your own containers for organisation:
+```
+<div cx="my-container{bg-sky-900 hover{bg-sky-50}}">
+```
 ### Multi markup language support, use the EXT(External) tag:
 ```
 <ext lang="markdown" src="/README.md">
+```
+### Extended tailwind like CSS:
+Catci's Web Engine supports extended tailwind like CSS. You can use many of the tailwind classes and colours in your HTML however values are more flexible:
+```
+<div cx="bg-blue-500 hover{bg-blue-700} c-white bold br-10px p-10px">
+    <div cx="bg-blue-600 c-white br-auto"> <!- auto border radius sets the the parents border radius minus its padding creating a correctly rounded border->
+</div>
 ```
 ### Json extraction:
 ```
