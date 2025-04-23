@@ -12,6 +12,18 @@ Catci is a modern, attribute-driven web engine for rapid prototyping, theming, a
 
 ---
 
+## Implementation
+
+Make sure these are in your head tag:
+Main script:
+```
+https://cdn.jsdelivr.net/gh/cat-ci/webengine/main.js
+```
+Quickload.css for FOUC and fallback:
+```
+https://cdn.jsdelivr.net/gh/cat-ci/webengine/quickload.css
+```
+
 ## 1. Style System (`[cx]` and Related Attributes)
 
 ### 1.1. Attribute-Driven Styling
