@@ -1,307 +1,510 @@
-# Catci's Web Engine
+# Catci Web Engine Documentation
 
-## Introduction
-Catci's Web Engine is a lightweight set of tools that allow you to create a website with ease.
+## Overview
 
----
+Catci is a modern, attribute-driven web engine for rapid prototyping, theming, and content rendering. It features:
 
-## Features
-- Multi markup language support straight into your HTML (RSS, Markdown, CSV etc.)
-- Extended tailwind like CSS
-- Inline JSON extraction from path
-- Font Awsome icons support
-- Element cloning, positioning (within DOM), and more
-- Boolean styling support
-- Normal mapped images support (Via THREE.js)
-- Automatic semantic reformatting
-- Better tooltips
-- Better audio player
-- Lowend attributes definition (Automatically detects if a users computer is lowend or struggling)
-- Theme attributes definition (Automatic to users browser preference light/dark mode)
-- Prebuilt animations
-- Prebuilt Common Javascript functions
-- Automatic sitemap.xml generation (if not present -- based on your HTML anchors)
-- Automatic interpretation for other browsers (e.g. Safari, Firefox, Chrome, Edge, Opera) changing styling to work on all browsers
+- **Attribute-based styling** (utility-first, inspired by Tailwind)
+- **Dynamic content rendering** (`<ext lang="...">` for Markdown, CSV, RSS)
+- **Configurable tooltips**
+- **3D-lit images with `<normal-img>`**
+- **Quickload CSS** for instant, JS-agnostic fallback styling
 
 ---
 
+## 1. Style System (`[cx]` and Related Attributes)
 
+### 1.1. Attribute-Driven Styling
 
-## Customizability
+Style elements by adding attributes like `cx`, `font`, `bg`, etc. Each attribute can take **utility shorthands** or **CSS-like property-value pairs**.
 
-Catci's Web Engine is designed to be highly customizable. You can easily add your own styles, animations, and functions to the engine.
+#### Example: Basic Usage
 
-Multi Mark Up languages come with 0 predefined styles allowing you to easily customise your site with semantic tags 
+```html
+<div cx="dn">This is hidden (display: none)</div>
+<div cx="db">This is block (display: block)</div>
+<div font="fs:1.5rem;fwght:bold">Big bold text</div>
+<div bg="bgc:slate-100;">Gray background</div>
 ```
-.Blog-rss h3{
-    color:white;
+
+#### Example: Multiple Attributes
+
+```html
+<div font="fs:1.2rem;fwght:600" bg="bgc:slate-100;" spacing="p:1rem;m:2rem">
+  Custom font, background, and spacing
+</div>
+```
+
+### 1.2. Utility Shorthands
+
+The `cx` attribute (and others) accept **utility shorthands**.  
+For example:
+
+| Shorthand | CSS Output                |
+|-----------|---------------------------|
+| `dn`      | `display: none`           |
+| `db`      | `display: block`          |
+| `r`       | `display: flex; flex-direction: row` |
+| `jc`      | `justify-content: center` |
+| `aic`     | `align-items: center`     |
+| `rel`     | `position: relative`      |
+| `abs`     | `position: absolute`      |
+
+#### Example: Flexbox Centering
+
+```html
+<div cx="r jc aic" style="height:200px">
+  <span>Centered!</span>
+</div>
+```
+
+### 1.3. Property-Value Pairs
+
+You can use property-value pairs in any attribute:
+
+```html
+<div font="fs:2rem;fwght:700;c:slate-100;">
+  Large, bold, slate-100 color (uses --slate-100 variable)
+</div>
+```
+
+### 1.4. Pseudo-Classes (`hover { ... }`, `focus { ... }`, etc.)
+
+You can write inline pseudo-classes inside your attribute values:
+
+```html
+<button font="c:slate-100;hover { c:white; bgc:blue-700; }">
+  Hover me!
+</button>
+```
+
+**How it works:**  
+- The parser looks for `hover { ... }`, `focus { ... }`, `active { ... }`, `disabled { ... }`, `checked { ... }` inside the attribute value.
+- The CSS inside the braces is applied only on that pseudo-class.
+
+#### Example: Multiple Pseudo-Classes
+
+```html
+<input
+  size="w:200px"
+  font="c:slate-700;focus { c:blue-700; bw:2px; bc:blue-700; }"
+  spacing="p:0.5rem"
+  bd="bw:1px;bc:slate-300;bs:solid"
+>
+```
+
+### 1.5. Nested Selectors (`> child`)
+
+You can target direct children using `> selector { ... }`:
+
+```html
+<div cx="r jc aic > span { c:red; fwght:bold; }">
+  <span>Red child</span>
+  <span>Another red child</span>
+</div>
+```
+
+### 1.6. Using CSS Variables
+
+If you use a value that matches a CSS variable (e.g., `slate-100`), it will be replaced with `var(--slate-100)` if defined.
+
+```html
+<div font="c:slate-100;">Uses var(--slate-100) for color</div>
+```
+
+### 1.7. Color Variables: Tailwind-Compatible
+
+Catci uses the **same color variable names as Tailwind CSS**.  
+All the familiar colors like `slate-100`, `gray-500`, `blue-700`, etc., are available as CSS variables (e.g., `--slate-100`).
+
+**Example:**
+
+```css
+:root {
+  --slate-100: #f1f5f9;
+  --blue-700: #1d4ed8;
+  --red-500: #ef4444;
+  /* ...and so on for all Tailwind colors */
 }
 ```
 
----
+**Use in attributes (no spaces!):**
 
-## Usage
-
-### Containers:
-
-#### Hover Container
-to hover in CWE, use the hover attribute-container:
-```
-<div cx="hover{bg-blue-500 hover:text-white}>Hover me</div>
-```
-#### Organisation Containers
-Define your own containers for organisation:
-```
-<div cx="my-container{bg-sky-900 hover{bg-sky-50}}">
-```
-### Multi markup language support, use the EXT(External) tag:
-```
-<ext lang="markdown" src="/README.md">
-```
-### Extended tailwind like CSS:
-Catci's Web Engine supports extended tailwind like CSS. You can use many of the tailwind classes and colours in your HTML however values are more flexible:
-```
-<div cx="bg-blue-500 hover{bg-blue-700} c-white bold br-10px p-10px">
-    <div cx="bg-blue-600 c-white br-auto"> <!- auto border radius sets the the parents border radius minus its padding creating a correctly rounded border->
+```html
+<div font="c:slate-100;" bg="bgc:blue-700;">
+  Text is slate-100, background is blue-700.
 </div>
 ```
-### Json extraction:
-```
-<div cx="json:first('name') from(https://example.com/example.json) push(self, content) fallback('No name found');"></div> <- Will extract the first name from the json and push it to the content of the div
 
-<ul cx="json:all('name') from(https://example.com/example.json) push(child, content) fallback('No names available');"></ul> <- Will extract all names from the json and push them as children to the ul
+### 1.8. Direct Colors
 
-<div cx="json:filter({role: 'admin'}) from(https://example.com/users.json) push(.admin-list, content) fallback('No admins found');"></div> <- Will extract all users with the role of admin and push them to the content of .admin-list
+You can use direct color values like `rgba(0,0,0,0.5)` in some cases, but for best compatibility and theming, **prefer the Tailwind variable names**.
 
-<img cx="json:map('image_url') from(https://example.com/products.json) push(self, src) fallback('default.jpg');" /> <- Will extract the image_url from the json and push it to the src of the img
-
-<div cx="json:first('title') from(https://example.com/blog.json) push(self, content) error('Failed to load blog title');"></div> <- Handle errors
-
-<div cx="json:$.store.book[0].title from(https://example.com/example.json) push(self, content) fallback('No title available');"></div> <- Use an actual JSON path
-```
-
-### Font Awsome icons support:
-```
-<icon name="cat" weight="regular"></icon> <- if not specified, defaults to solid
-```
-
-### Element cloning, positioning (within DOM), and more:
-```
-<div cx="clone:all(.element);"></div> <- Will clone the first element with the class of element cloning the content, styling, and CWE attributes to itself
-
-<div cx="clone:style(#element);"></div> <- Will clone the element with the id element cloning the styling to itself 
-
-<div cx="clone:content([type="search"] ~ 3);"> <- Will clone the third element with the type of search cloning the content to itself
-```
-
-### Normal mapped images support:
-```
-<normal height-src="/normal.png" color-src="/texture.png"></normal>
-```
-
-### Lowend attributes definition:
-```
-<div cx="animation:spin; copy-on-click(self) lowend{animation:none; block(javascript)};"></div> 
-```
-
-### Theme attributes definition:
-```
-<div cx="theme:light{background-color: #fff; color: #000;} dark{background-color: #000; color: #fff;};"></div>
-```
 ---
 
+### ⚠️ About `hover { ... }` and No-JS Compatibility
 
-#### 1. Layout: Padding & Margin
-| Shortcut                         | Usage           | Result                      |
-|----------------------------------|-----------------|-----------------------------|
-| np, padding-0                    | —               | padding: 0;                 |
-| ap, padding-auto                 | —               | padding: auto;              |
-| p-{size}, padding-{size}         | size (e.g. 8px) | padding: {size};            |
-| pt, padding-top-0                | —               | padding-top: 0;             |
-| pt-{size}, padding-top-{size}    | size            | padding-top: {size};        |
-| pr, padding-right-0              | —               | padding-right: 0;           |
-| pr-{size}, padding-right-{size}  | size            | padding-right: {size};      |
-| pb, padding-bottom-0             | —               | padding-bottom: 0;          |
-| pb-{size}, padding-bottom-{size} | size            | padding-bottom: {size};     |
-| pl, padding-left-0               | —               | padding-left: 0;            |
-| pl-{size}, padding-left-{size}   | size            | padding-left: {size};       |
-| px-{size}, padding-x-{size}      | size            | padding-left/right: {size}; |
-| py-{size}, padding-y-{size}      | size            | padding-top/bottom: {size}; |
-| nm, margin-0                     | —               | margin: 0;                  |
-| am, margin-auto                  | —               | margin: auto;               |
-| m-{size}, margin-{size}          | size            | margin: {size};             |
-| mt, margin-top-0                 | —               | margin-top: 0;              |
-| mt-{size}, margin-top-{size}     | size            | margin-top: {size};         |
-| mr, margin-right-0               | —               | margin-right: 0;            |
-| mr-{size}, margin-right-{size}   | size            | margin-right: {size};       |
-| mb, margin-bottom-0              | —               | margin-bottom: 0;           |
-| mb-{size}, margin-bottom-{size}  | size            | margin-bottom: {size};      |
-| ml, margin-left-0                | —               | margin-left: 0;             |
-| ml-{size}, margin-left-{size}    | size            | margin-left: {size};        |
-| mx-{size}, margin-x-{size}       | size            | margin-left/right: {size};  |
-| my-{size}, margin-y-{size}       | size            | margin-top/bottom: {size};  |
-| w-{size}, width-{size}           | size            | width: {size};              |
-| h-{size}, height-{size}          | size            | height: {size};             |
-| min-w-{size}, min-width-{size}   | size            | min-width: {size};          |
-| max-w-{size}, max-width-{size}   | size            | max-width: {size};          |
-| min-h-{size}, min-height-{size}  | size            | min-height: {size};         |
-| max-h-{size}, max-height-{size}  | size            | max-height: {size};         |
-| z-{index}, z-index-{index}       | integer         | z-index: {index};           |
+- The `hover { ... }` and other pseudo-class features in Catci’s attribute-based style system **require JavaScript** to work.  
+- **If JavaScript is disabled**, these dynamic hover/focus/active styles **will not be applied**.
 
-#### 2. Display & Box Model
-| Shortcut                      | Usage | Result                   |
-|-------------------------------|-------|--------------------------|
-| dn, display-none              | —     | display: none;           |
-| db, display-block             | —     | display: block;          |
-| di, display-inline            | —     | display: inline;         |
-| dib, display-inline-block     | —     | display: inline-block;   |
-| dg, display-grid              | —     | display: grid;           |
-| dig, display-inline-grid      | —     | display: inline-grid;    |
-| dt, display-table             | —     | display: table;          |
-| dtr, display-table-row        | —     | display: table-row;      |
-| dtc, display-table-cell       | —     | display: table-cell;     |
-| bs-bb, box-sizing-border-box  | —     | box-sizing: border-box;  |
-| bs-cb, box-sizing-content-box | —     | box-sizing: content-box; |
+#### If you need full no-JS compatibility:
 
-#### 3. Flexbox & Alignment
-| Shortcut                          | Usage | Result                                         |
-|-----------------------------------|-------|------------------------------------------------|
-| r, flex-row                       | —     | display:flex;<br>flex-direction:row;           |
-| c, flex-column                    | —     | display:flex;<br>flex-direction:column;        |
-| ir, inline-flex-row               | —     | display:inline-flex;<br>flex-direction:row;    |
-| ic, inline-flex-column            | —     | display:inline-flex;<br>flex-direction:column; |
-| js, justify-start                 | —     | justify-content:flex-start;                    |
-| je, justify-end                   | —     | justify-content:flex-end;                      |
-| jc, justify-center                | —     | justify-content:center;                        |
-| jsb, justify-space-between        | —     | justify-content:space-between;                 |
-| jsa, justify-space-around         | —     | justify-content:space-around;                  |
-| jse, justify-space-evenly         | —     | justify-content:space-evenly;                  |
-| ais, align-items-stretch          | —     | align-items:stretch;                           |
-| aie, align-items-end              | —     | align-items:flex-end;                          |
-| aic, align-items-center           | —     | align-items:center;                            |
-| aib, align-items-baseline         | —     | align-items:baseline;                          |
-| acfs, align-content-start         | —     | align-content:flex-start;                      |
-| ace, align-content-end            | —     | align-content:flex-end;                        |
-| acc, align-content-center         | —     | align-content:center;                          |
-| acsb, align-content-space-between | —     | align-content:space-between;                   |
-| acsa, align-content-space-around  | —     | align-content:space-around;                    |
-| acse, align-content-space-evenly  | —     | align-content:space-evenly;                    |
-| asfs, align-self-start            | —     | align-self:flex-start;                         |
-| asfe, align-self-end              | —     | align-self:flex-end;                           |
-| asc, align-self-center            | —     | align-self:center;                             |
-| asb, align-self-baseline          | —     | align-self:baseline;                           |
-| ass, align-self-stretch           | —     | align-self:stretch;                            |
-| fnw, flex-nowrap                  | —     | flex-wrap:nowrap;                              |
-| fw, flex-wrap                     | —     | flex-wrap:wrap;                                |
-| fwr, flex-wrap-reverse            | —     | flex-wrap:wrap-reverse;                        |
+- **Define your hover styles in a regular CSS stylesheet** using standard CSS selectors:
 
-#### 4. Position & Float
-| Shortcut               | Usage | Result             |
-|------------------------|-------|--------------------|
-| rel, position-relative | —     | position:relative; |
-| abs, position-absolute | —     | position:absolute; |
-| fix, position-fixed    | —     | position:fixed;    |
-| stk, position-sticky   | —     | position:sticky;   |
-| fl, float-left         | —     | float:left;        |
-| fr, float-right        | —     | float:right;       |
-| fn, float-none         | —     | float:none;        |
-| cl, clear-left         | —     | clear:left;        |
-| cr, clear-right        | —     | clear:right;       |
-| cb, clear-both         | —     | clear:both;        |
+    ```css
+    .my-btn:hover {
+      background-color: var(--blue-700);
+    }
+    ```
 
-#### 5. Overflow & Resize
-| Shortcut                     | Usage | Result            |
-|------------------------------|-------|-------------------|
-| oh, overflow-hidden          | —     | overflow:hidden;  |
-| oa, overflow-auto            | —     | overflow:auto;    |
-| os, overflow-scroll          | —     | overflow:scroll;  |
-| ov, overflow-visible         | —     | overflow:visible; |
-| ocl, overflow-clip           | —     | overflow:clip;    |
-| ov-{value}, overflow-{value} | value | overflow:{value}; |
-| resize, resize-both          | —     | resize:both;      |
-| resize-n, resize-none        | —     | resize:none;      |
+    ```html
+    <button class="my-btn">Button</button>
+    ```
 
-#### 6. Visibility & Contenteditable
-| Shortcut                        | Usage      | Result                   |
-|---------------------------------|------------|--------------------------|
-| vs, visibility-visible          | —          | visibility:visible;      |
-| vh, visibility-hidden           | —          | visibility:hidden;       |
-| vc, visibility-collapse         | —          | visibility:collapse;     |
-| ce, contenteditable-true        | —          | contenteditable:true;    |
-| ce-n, contenteditable-false     | —          | contenteditable:false;   |
-| ce-{value}, contenteditable-{v} | true/false | contenteditable:{value}; |
+- This ensures your hover styles work even if JavaScript is off.
 
-#### 7. Text & Typography
-| Shortcut                            | Usage         | Result                                                             |
-|-------------------------------------|---------------|--------------------------------------------------------------------|
-| tw, text-wrap                       | —             | overflow-wrap:break-word;<br>word-break:break-word;                |
-| to-e, text-overflow-ellipsis        | —             | text-overflow:ellipsis;<br>overflow:hidden;<br>white-space:nowrap; |
-| tu, text-transform-uppercase        | —             | text-transform:uppercase;                                          |
-| tl, text-transform-lowercase        | —             | text-transform:lowercase;                                          |
-| tc, text-transform-capitalize       | —             | text-transform:capitalize;                                         |
-| ta-left, text-align-left            | —             | text-align:left;                                                   |
-| ta-center, text-align-center        | —             | text-align:center;                                                 |
-| ta-right, text-align-right          | —             | text-align:right;                                                  |
-| ta-justify, text-align-justify      | —             | text-align:justify;                                                |
-| td-u, text-decoration-underline     | —             | text-decoration:underline;                                         |
-| td-lt, text-decoration-line-through | —             | text-decoration:line-through;                                      |
-| td-n, text-decoration-none          | —             | text-decoration:none;                                              |
-| ws-nw, white-space-nowrap           | —             | white-space:nowrap;                                                |
-| ws-n, white-space-normal            | —             | white-space:normal;                                                |
-| ws-pre, white-space-pre             | —             | white-space:pre;                                                   |
-| ws-pw, white-space-pre-wrap         | —             | white-space:pre-wrap;                                              |
-| ws-pl, white-space-pre-line         | —             | white-space:pre-line;                                              |
-| c-{color}, color-{color}            | color         | color:{color};                                                     |
-| fs-{size}, font-size-{size}         | size          | font-size:{size};                                                  |
-| ff-{family}, font-family-{family}   | family        | font-family:{family};                                              |
-| lh-{value}, line-height-{value}     | number/length | line-height:{value};                                               |
-| ti-{size}, text-indent-{size}       | size          | text-indent:{size};                                                |
-| b, font-weight-bold                 | —             | font-weight:bold;                                                  |
-| i, font-style-italic                | —             | font-style:italic;                                                 |
+#### Should you worry about no-JS users?
 
-#### 8. Backgrounds
-| Shortcut                           | Usage            | Result                       |
-|------------------------------------|------------------|------------------------------|
-| bg-none, background-none           | —                | background:none;             |
-| bg-init, background-initial        | —                | background:initial;          |
-| bg-{v}, background-{v}             | any bg shorthand | background:{v};              |
-| bgc-{color}, background-color-{c}  | color            | background-color:{color};    |
-| bgi-{url}, background-image-{u}    | URL (no quotes)  | background-image:url({url}); |
-| bgp-{pos}, background-position-{p} | position         | background-position:{pos};   |
-| bgs-{size}, background-size-{s}    | size             | background-size:{size};      |
-| bgr-{r}, background-repeat-{r}     | repeat value     | background-repeat:{r};       |
+- **For most modern web projects, it’s not necessary to optimize for the small percentage of users with JavaScript disabled.**
+- Catci’s engine is designed for rapid development and dynamic theming, which assumes JavaScript is available.
+- **Quickload CSS** ensures your site is readable and themed before JS loads, but advanced interactivity (like hover via attributes) is JS-powered.
 
-#### 9. Border & Outline
-| Shortcut                       | Usage       | Result                  |
-|--------------------------------|-------------|-------------------------|
-| b-none, border-none            | —           | border:none;            |
-| b-init, border-initial         | —           | border:initial;         |
-| br-{radius}, border-radius-{r} | radius      | border-radius:{radius}; |
-| bw-{w}, border-width-{w}       | width       | border-width:{w};       |
-| bc-{color}, border-color-{c}   | color       | border-color:{color};   |
-| bs-{style}, border-style-{s}   | style       | border-style:{style};   |
-| o-none, outline-none           | —           | outline:none;           |
-| o-init, outline-initial        | —           | outline:initial;        |
-| o-{value}, outline-{value}     | any outline | outline:{value};        |
+---
 
-#### 10. Miscellaneous
-| Shortcut                   | Usage      | Result               |
-|----------------------------|------------|----------------------|
-| cur-p, cursor-pointer      | —          | cursor:pointer;      |
-| cur-d, cursor-default      | —          | cursor:default;      |
-| cur-na, cursor-not-allowed | —          | cursor:not-allowed;  |
-| cur-{v}, cursor-{v}        | any cursor | cursor:{v};          |
-| op-0, opacity-0            | —          | opacity:0;           |
-| op-1, opacity-1            | —          | opacity:1;           |
-| op-{v}, opacity-{v}        | 0–1 or %   | opacity:{v};         |
-| ls-n, list-style-none      | —          | list-style:none;     |
-| ls-i, list-style-initial   | —          | list-style:initial;  |
-| ls-{v}, list-style-{v}     | any value  | list-style:{v};      |
-| us-n, user-select-none     | —          | user-select:none;    |
-| us-a, user-select-auto     | —          | user-select:auto;    |
-| us-t, user-select-text     | —          | user-select:text;    |
-| us-all, user-select-all    | —          | user-select:all;     |
-| us-{v}, user-select-{v}    | any value  | user-select:{v};     |
-| pe-n, pointer-events-none  | —          | pointer-events:none; |
-| pe-a, pointer-events-auto  | —          | pointer-events:auto; |
-| pe-{v}, pointer-events-{v} | any value  | pointer-events:{v};  |
+## 2. Quickload CSS: Fallback Styling
+
+### 2.1. Purpose
+
+**Quickload CSS** is a minimal, fast-loading stylesheet that ensures your site is readable and themed before the JavaScript-powered style system takes over. It is especially important for:
+
+- **Fast first paint:** Users see a styled page immediately.
+- **No-JS fallback:** The site remains usable and themed if JavaScript is disabled or fails to load.
+
+### 2.2. How to Use
+
+**Include it early in your HTML:**
+
+```html
+<link rel="stylesheet" href="quickload.css">
+```
+
+### 2.3. Color Formatting and Variable Usage
+
+- **No spaces:**  
+  Always write color values in your attributes without spaces.  
+  **Correct:** `c:slate-100;`  
+  **Incorrect:** `c: slate-100;`
+
+- **Use Catci’s (Tailwind’s) color variables:**  
+  When you write `c:slate-100;`, the system will resolve it to `var(--slate-100)`.
+
+- **Limited direct color support:**  
+  Quickload CSS supports a few direct color values (like `rgba(0,0,0,0.5)`), but for best compatibility, **always use the provided variables**.
+
+#### Example: Using Colors in Attributes
+
+```html
+<!-- Good: Uses Catci variable, no spaces -->
+<div font="c:slate-100;bgc:blue-700;">
+  Text is slate-100, background is blue-700.
+</div>
+
+<!-- Good: Uses a supported rgba value -->
+<div font="c:rgba(0,0,0,0.5);">
+  Semi-transparent black text.
+</div>
+
+<!-- Bad: Spaces in value (may not work in quickload) -->
+<div font="c: slate-100;">
+  <!-- This may not be styled correctly in quickload mode -->
+</div>
+```
+
+#### Example: Migrating from Tailwind
+
+If you’re used to Tailwind classes like:
+
+```html
+<div class="text-slate-100 bg-blue-700"></div>
+```
+
+**In Catci, write:**
+
+```html
+<div font="c:slate-100;" bg="bgc:blue-700;"></div>
+```
+
+---
+
+## 3. Lang System (`<ext lang="...">`)
+
+### 3.1. Markdown
+
+**Write Markdown directly:**
+
+```html
+<ext lang="markdown">
+# Welcome
+
+- This is a list
+- **Bold** and _italic_
+- [Link](https://example.com)
+</ext>
+```
+
+**Or load from a file:**
+
+```html
+<ext lang="markdown" src="about.md"></ext>
+```
+
+**Features:**
+- Footnotes, definition lists, task lists, emoji (via plugins)
+- All links open in a new tab
+
+### 3.2. CSV
+
+**Inline CSV:**
+
+```html
+<ext lang="csv">
+Name,Score
+Alice,10
+Bob,8
+</ext>
+```
+
+**Remote CSV:**
+
+```html
+<ext lang="csv" src="scores.csv"></ext>
+```
+
+**Renders as:**
+
+| Name  | Score |
+|-------|-------|
+| Alice | 10    |
+| Bob   | 8     |
+
+### 3.3. RSS
+
+**Show an RSS feed:**
+
+```html
+<ext lang="rss" src="https://example.com/feed.xml"></ext>
+```
+
+- Items are rendered with title, description, author, date, and media if present.
+- Updates every 15 seconds.
+
+---
+
+## 4. Tooltip System
+
+### 4.1. Writing Tooltip Configs
+
+**Define in a `<config>` block:**
+
+```html
+<config>
+  <define feature="tooltip" name="default">
+    <style name="tooltip">
+      tooltip {
+        background: #222;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        box-shadow: 0 2px 8px #0003;
+        pointer-events: none;
+        z-index: 1000;
+        position: fixed;
+        transition: opacity 0.15s;
+      }
+    </style>
+    <placement mode="follow"></placement>
+  </define>
+  <define feature="tooltip" name="fancy">
+    <style name="tooltip">
+      tooltip {
+        background: linear-gradient(90deg, #ff8, #f0f);
+        color: #222;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 1.1em;
+        border: 2px solid #f0f;
+      }
+    </style>
+    <placement mode="above"></placement>
+  </define>
+</config>
+```
+
+- **name:** The config name (use with `tooltip-config="..."`)
+- **style:** CSS for the tooltip (use `tooltip { ... }`)
+- **placement:** One of `follow`, `above`, `under`, `left`, `right`
+
+### 4.2. Using Tooltips
+
+**Basic:**
+
+```html
+<button tooltip="Click to submit">Submit</button>
+```
+
+**With a custom config:**
+
+```html
+<button tooltip="Fancy!" tooltip-config="fancy">Fancy Tooltip</button>
+```
+
+**Using ARIA label:**
+
+```html
+<button aria-label="Delete this item" tooltip="{aria}">🗑️</button>
+```
+
+### 4.3. Placement Modes
+
+- `follow`: Tooltip follows the mouse
+- `above`: Tooltip appears above the element
+- `under`: Tooltip appears below
+- `left`: Tooltip to the left
+- `right`: Tooltip to the right
+
+---
+
+## 5. `<normal-img>` Custom Element
+
+### 5.1. Basic Usage
+
+```html
+<normal-img
+  color-src="diffuse.jpg"
+  normal-src="normal.png"
+  style="width:300px;height:300px"
+></normal-img>
+```
+
+### 5.2. Advanced Attributes
+
+- **light:** Light position, e.g. `1,1,2`
+- **intensity:** Normal map intensity, e.g. `0.7`
+- **opacity:** Opacity of the shading, e.g. `0.3`
+- **light-color:** Light color, e.g. `#fff`
+- **roughness:** Material roughness, e.g. `0.8`
+- **metalness:** Material metalness, e.g. `0.2`
+
+#### Example: Custom Lighting
+
+```html
+<normal-img
+  color-src="wood.jpg"
+  normal-src="wood-normal.png"
+  light="2,2,3"
+  intensity="0.5"
+  opacity="0.4"
+  light-color="#ffe"
+  roughness="0.6"
+  metalness="0.1"
+  style="width:400px;height:200px"
+></normal-img>
+```
+
+### 5.3. How It Works
+
+- Loads both color and normal map images.
+- Uses Three.js to render a plane with a normal-mapped material.
+- Lighting and material properties are fully configurable.
+
+---
+
+## 6. Advanced Examples
+
+### 6.1. Complex Attribute Styling
+
+```html
+<button
+  cx="db"
+  font="fs:1.1rem;fwght:600;c:slate-700;hover { c:white; bgc:blue-700; }"
+  spacing="p:0.75rem 1.5rem"
+  bd="bw:2px;bc:blue-700;bs:solid;hover { bc:blue-800; }"
+>
+  Stylish Button
+</button>
+```
+
+### 6.2. Nested Selectors
+
+```html
+<div cx="r jc aic > span { c:red; fwght:bold; }">
+  <span>Red child</span>
+  <span>Another red child</span>
+</div>
+```
+
+### 6.3. Pseudo-Classes
+
+```html
+<input
+  font="c:slate-700;focus { c:blue-700; bw:2px; bc:blue-700; }"
+  bd="bw:1px;bc:slate-300;bs:solid"
+  spacing="p:0.5rem"
+>
+```
+
+---
+
+## 7. Writing Your Own Configs
+
+### 7.1. Tooltip Config Example
+
+```html
+<config>
+  <define feature="tooltip" name="mytheme">
+    <style name="tooltip">
+      tooltip {
+        background: #333;
+        color: #ff0;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-family: monospace;
+      }
+    </style>
+    <placement mode="right"></placement>
+  </define>
+</config>
+```
+
+**Use it:**
+
+```html
+<span tooltip="Custom tooltip" tooltip-config="mytheme">Hover me</span>
+```
+
+---
+
+## 8. Summary Table
+
+| System         | Purpose                                      | Usage Example                |
+|----------------|----------------------------------------------|------------------------------|
+| Style System   | Utility-first, attribute-driven CSS          | `<div cx="dn"></div>`        |
+| Lang System    | Render Markdown, CSV, RSS in `<ext>`         | `<ext lang="markdown">...</ext>` |
+| Tooltip        | Configurable tooltips via attributes/config   | `<button tooltip="..."></button>` |
+| Normal Image   | 3D-lit images with normal maps               | `<normal-img ...></normal-img>`   |
+| Quickload CSS  | Fallback CSS for fast/JS-off theming         | `<link rel="stylesheet" href="quickload.css">` |
+
+---
+
+## 9. Best Practices
+
+- **Always include `quickload.css`** for graceful degradation.
+- **Use attribute-based styling** for rapid prototyping and theming.
+- **Configure tooltips** in a `<config>` block for consistent UX.
+- **Use `<normal-img>`** for interactive, visually rich images.
+- **Use Tailwind-compatible color variables** (e.g., `slate-100`, `blue-700`) in your attributes, with no spaces.
+- **For critical hover/focus styles that must work without JS, define them in your CSS.**
+- **For most projects, you can safely rely on Catci’s JS-powered system.**
+
+---
