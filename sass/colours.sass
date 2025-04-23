@@ -9,15 +9,12 @@ $color-shades: 50, 100, 200, 300, 400,
   @each $shade in $color-shades {
     $name: "#{$family}-#{$shade}";
 
-    // 1) prefixed “cx” tokens that use the CSS var
     [cx~= "c:#{$name}"]   { color:           var(--#{$name}); }
     [cx~= "bg:#{$name}"]  { background-color: var(--#{$name}); }
     [cx~= "bdc:#{$name}"] { border-color:     var(--#{$name}); }
 
-    // 2) shorthand token → color only
     [cx~= "#{$name}"]     { color:           var(--#{$name}); }
 
-    // 3) explicit inline declaration
     [cx= "color:var(--#{$name});"] { color:           var(--#{$name}); }
     [cx= "bg:var(--#{$name});"]    { background-color: var(--#{$name}); }
     [cx= "bdc:var(--#{$name});"]   { border-color:     var(--#{$name}); }
