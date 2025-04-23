@@ -1,5 +1,4 @@
 $cx-color-items: (
-  // Hex basics
   #fff:        #fff,
   #000:        #000,
   #f00:        #f00,
@@ -10,13 +9,11 @@ $cx-color-items: (
   #f0f:        #f0f,
   transparent: transparent,
 
-  // common gray shorthands
   #111: #111, #222: #222, #333: #333, #444: #444,
   #555: #555, #666: #666, #777: #777, #888: #888,
   #999: #999, #aaa: #aaa, #bbb: #bbb, #ccc: #ccc,
   #ddd: #ddd, #eee: #eee, #fafafa: #fafafa,
 
-  // popular “flat”/brand hexes
   #1abc9c: #1abc9c, #16a085: #16a085,
   #2ecc71: #2ecc71, #27ae60: #27ae60,
   #3498db: #3498db, #2980b9: #2980b9,
@@ -28,7 +25,6 @@ $cx-color-items: (
   #ecf0f1: #ecf0f1, #bdc3c7: #bdc3c7,
   #7f8c8d: #7f8c8d,
 
-  // CSS color names
   aliceblue:        aliceblue,
   antiquewhite:     antiquewhite,
   aqua:             aqua,
@@ -163,7 +159,6 @@ $cx-color-items: (
   whitesmoke:       whitesmoke,
   yellowgreen:      yellowgreen,
 
-  // RGBA
   'rgba(0,0,0,0.5)':   rgba(0, 0, 0, 0.5),
   'rgba(255,255,255,0.5)': rgba(255, 255, 255, 0.5),
   'rgba(255,0,0,0.5)': rgba(255, 0, 0, 0.5),
@@ -171,7 +166,6 @@ $cx-color-items: (
   'rgba(0,0,255,0.5)': rgba(0, 0, 255, 0.5)
 );
 
-// All color-related shorthands and their CSS properties
 $color-props: (
   c: color,
   color: color,
@@ -190,13 +184,12 @@ $color-props: (
   caret: caret-color,
   accent: accent-color,
   crc: column-rule-color,
-  tec: text-emphasis-color // if you use it
+  tec: text-emphasis-color 
 );
 
 @each $name, $value in $cx-color-items {
   @each $shorthand, $css-prop in $color-props {
     [cx~="#{$shorthand}:#{$name}"] { #{$css-prop}: #{$value}; }
   }
-  // Optional: allow [cx~="#{$name}"] to set color
   [cx~="#{$name}"] { color: #{$value}; }
 }
