@@ -207,7 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
             fill: "fill",
             stroke: "stroke",
             strokeW: "strokeWidth",
-            cp: "clip-path"
+            cp: "clip-path",
+            ts: ["-webkit-text-stroke", "text-stroke"],
         },
         o = {
             dn: [
