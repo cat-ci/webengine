@@ -20,11 +20,11 @@ async function animateText(element, options = {}) {
         char = "|",
         reveal = 1200,
         trigger = "load",
-        pause = 700,    
-        delpause = 400, 
-        once = false,   
-        infinite = false, 
-        random = false    
+        pause = 700,
+        delpause = 400,
+        once = false,
+        infinite = false,
+        random = false
     } = options;
 
     let switchTexts = [];
@@ -39,6 +39,9 @@ async function animateText(element, options = {}) {
     }
 
     const runAnimation = async () => {
+        if (element._isAnimating) return;
+        element._isAnimating = true;
+
         if (!element._originalText) {
             element._originalText = element.textContent;
         }
@@ -69,6 +72,9 @@ async function animateText(element, options = {}) {
             text.reveal(0);
             text.start();
             text.reveal(reveal);
+            setTimeout(() => {
+                element._isAnimating = false;
+            }, reveal);
         } else if (type === "typein") {
             element.textContent = "";
             let i = 0;
@@ -78,6 +84,7 @@ async function animateText(element, options = {}) {
                 if (i >= element._originalText.length) {
                     clearInterval(element._animationInterval);
                     element._animationInterval = null;
+                    element._isAnimating = false;
                 }
             }, speed);
         } else if (type === "cursor") {
@@ -100,6 +107,10 @@ async function animateText(element, options = {}) {
                 `;
                 document.head.appendChild(style);
             }
+
+            setTimeout(() => {
+                element._isAnimating = false;
+            }, 500);
         } else if (type === "typeswitch") {
             let idx = 0;
             let prevIdx = -1;
@@ -151,14 +162,14 @@ async function animateText(element, options = {}) {
             const next = () => {
                 if (!running) return;
                 typeText(switchTexts[idx], () => {
-
                     if (once && idx === switchTexts.length - 1) {
                         element.style.visibility = "visible";
+                        element._isAnimating = false;
                         return;
                     }
-
                     if (!infinite && !random && idx === switchTexts.length - 1) {
                         element.style.visibility = "visible";
+                        element._isAnimating = false;
                         return;
                     }
                     deleteText(() => {
@@ -169,6 +180,9 @@ async function animateText(element, options = {}) {
                 });
             };
             next();
+        } else {
+
+            element._isAnimating = false;
         }
     };
 
@@ -197,7 +211,7 @@ async function animateText(element, options = {}) {
             element.addEventListener("click", runAnimation, { once: true });
             break;
         case "hover":
-            element.addEventListener("mouseenter", runAnimation, { once: true });
+            element.addEventListener("mouseenter", runAnimation);
             break;
         case "focus":
             element.addEventListener("focus", runAnimation, { once: true });
@@ -217,50 +231,50 @@ async function animateText(element, options = {}) {
 function parseTextEffectParams(str) {
     const res = {};
     str.split(';').forEach(part => {
-      let p = part.trim();
-      if (!p) return;
+        let p = part.trim();
+        if (!p) return;
 
-      const m = /^(\w+)\s+(.+)$/.exec(p);
-      if (m && m[2].includes(':')) {
-        if (!res.type) res.type = m[1];
-        p = m[2];
-      }
+        const m = /^(\w+)\s+(.+)$/.exec(p);
+        if (m && m[2].includes(':')) {
+            if (!res.type) res.type = m[1];
+            p = m[2];
+        }
 
-      if (!p.includes(':')) {
-        if (!res.type) res.type = p;
-        return;
-      }
+        if (!p.includes(':')) {
+            if (!res.type) res.type = p;
+            return;
+        }
 
-      const idx = p.indexOf(':');
-      const key = p.slice(0, idx).trim();
-      let val = p.slice(idx + 1).trim();
+        const idx = p.indexOf(':');
+        const key = p.slice(0, idx).trim();
+        let val = p.slice(idx + 1).trim();
 
-      if (/^-?\d+(\.\d+)?$/.test(val)) {
-        val = Number(val);
-      }
+        if (/^-?\d+(\.\d+)?$/.test(val)) {
+            val = Number(val);
+        }
 
-      else if (/^(true|false)$/i.test(val)) {
-        val = val.toLowerCase() === 'true';
-      }
-      res[key] = val;
+        else if (/^(true|false)$/i.test(val)) {
+            val = val.toLowerCase() === 'true';
+        }
+        res[key] = val;
     });
     return res;
-  }
+}
 
-  function initCsmTextEffects() {
+function initCsmTextEffects() {
     document
-      .querySelectorAll('[cx*="text-effect{"]')
-      .forEach(el => {
-        const cx = el.getAttribute('cx');
-        const m = /text-effect\{([^}]+)\}/.exec(cx);
-        if (!m) return;
-        const opts = parseTextEffectParams(m[1]);
-        animateText(el, opts);
-      });
-  }
+        .querySelectorAll('[cx*="text-effect{"]')
+        .forEach(el => {
+            const cx = el.getAttribute('cx');
+            const m = /text-effect\{([^}]+)\}/.exec(cx);
+            if (!m) return;
+            const opts = parseTextEffectParams(m[1]);
+            animateText(el, opts);
+        });
+}
 
-  if (document.readyState === 'loading') {
+if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initCsmTextEffects);
-  } else {
+} else {
     initCsmTextEffects();
-  }
+}
